@@ -76,3 +76,9 @@ bash
 ```
 python app.py
 ```
+Images of the app
+![image](https://github.com/user-attachments/assets/d9973022-a1bd-44be-9307-a5c2fc5150b6)
+![image](https://github.com/user-attachments/assets/7bad1817-cf07-4e4e-bb6f-ca2b1afbb4ad)
+![image](https://github.com/user-attachments/assets/330ffeab-0db8-4f62-854a-df946a3c97c1)
+
+![image](https://github.com/user-attachments/assets/35e6f972-fe66-4272-9fa1-55a2e4640f14)
