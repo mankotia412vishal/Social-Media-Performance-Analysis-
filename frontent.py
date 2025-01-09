@@ -26,7 +26,7 @@ def show_graph():
     views_data = pd.DataFrame({"Post Name": post_names, "Views Count": views_count})
 
     # Streamlit UI
-    st.title("Social Media Data")
+    # st.title("Social Media Data")
 
     # Comments Count Chart
     st.subheader("Comments Count for Each Post")

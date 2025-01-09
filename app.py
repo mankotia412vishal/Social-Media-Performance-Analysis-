@@ -6,7 +6,7 @@ from typing import Optional
 from dotenv import load_dotenv
 import os
 from frontent import show_graph
-
+from graph import plot_graph
 # Load environment variables
 load_dotenv()
 
@@ -80,7 +80,7 @@ def run_flow(message: str,
         headers = {"Authorization": "Bearer " + application_token, "Content-Type": "application/json"}
 
     response = requests.post(api_url, json=payload, headers=headers)
-    return response
+    return response.json()
 
 # Streamlit Main Application
 def main():
@@ -151,7 +151,7 @@ def main():
     st.sidebar.title("History")
     st.sidebar.markdown("See your previous chats here.")
     # Add more sidebar elements as needed
-    st.sidebar.selectbox("Select an option", ["Posts", "Reels", "Carousels"])
+    # st.sidebar.selectbox("Select an option", "])
     # st.markdown('<h2 class="title">Your Custom Title</h2>', unsafe_allow_html=True)
 
     if "messages" not in st.session_state:
@@ -165,7 +165,7 @@ def main():
         st.session_state.messages.append({"role": "user", "content": prompt})
 
         spinner_placeholder = st.empty()
-        spinner_placeholder.markdown('<div class="spinner-overlay"><div class="spinner"></div></div>', unsafe_allow_html=True)
+        # spinner_placeholder.markdown('<div class="spinner-overlay"><div class="spinner"></div></div>', unsafe_allow_html=True)
         response = run_flow(
             message=prompt,
             endpoint=ENDPOINT or FLOW_ID,
@@ -174,25 +174,54 @@ def main():
             tweaks=TWEAKS,
             application_token=APPLICATION_TOKEN
         )
+        # print("response", response)
         spinner_placeholder.empty()
         try:
             response_content = response.get("outputs", [{}])[0].get("outputs", [{}])[0].get("results", {}).get("message", {}).get("text", "Error: No response from the API")
+            # print("response_content Vishal", response_content)
             response_content = response_content.replace("`", "").replace("json", "").replace("\n", "").replace("Gemni can make mistakes. Check important info.", "")
+
             response_content = json.loads(response_content)
         except (json.JSONDecodeError, AttributeError):
             response_content = {"response_to_query": "Google Generative AI: Gemni LLM Resource has been exhausted (e.g. check quota)..", "Graph": "No"}
 
-        st.session_state.messages.append({"role": "assistant", "content": response_content.get('response_to_query', 'Error: Missing response')})
-        st.session_state.messages.append({"Graph": response_content.get('Graph', 'No')})
+        print(response_content,"Vishal Bhai dekh")
+        # this is the output of the response_content
+        # {'response_to_query': "Sure, I can help you with that. Could you please specify the y-axis parameter like '_id', 'ownerUsername', 'timestamp', 'id', 'alt', 'caption','likesCount', 'videoPlayCount', 'commentsCount', 'hashtags', 'videoViewCount', 'type', 'videoDuration' and the start and end dates (YYYY-MM-DD) for the graph?", 'Graph': 'Yes', 'x-axis': 'Date', 'y-axis': 'NA', 'start-Date': 'NA', 'end-Date': 'NA', 'post_all': 'No'}
+        
+        # Append response to session state
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response_content.get('response_to_query', 'Error: Missing response'),
+        })
+        st.session_state.messages.append({
+            "role": "system",
+            "Graph": response_content.get('Graph', 'No'),
+            "x-axis": response_content.get('x-axis', 'NA'),
+            "y-axis": response_content.get('y-axis', 'NA'),
+            "start-Date": response_content.get('start-Date', 'NA'),
+            "end-Date": response_content.get('end-Date', 'NA'),
+            "post_all": response_content.get('post_all', 'No')
+        })
 
-    # Display chat messages and graphs
+
+
+    # Display chat messages
     for message in st.session_state.messages:
-        if isinstance(message, dict) and "Graph" in message:
-            if message["Graph"] == "Yes":
-                show_graph()  # Show graph immediately after related content
-        else:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+        if isinstance(message, dict):
+            if "content" in message:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+            elif "Graph" in message and message["Graph"] == "Yes" and message["post_all"] == "No":
+                # Show graphs if applicable
+                plot_graph(
+                    message.get("x-axis", "NA"),
+                    message.get("y-axis", "NA"),
+                    message.get("start-Date", "NA"),
+                    message.get("end-Date", "NA")
+                )
+            elif "post_all" in message and message["post_all"] == "Yes":
+                show_graph()  # Show graph based on "post_all"
 
 if __name__ == "__main__":
     main()

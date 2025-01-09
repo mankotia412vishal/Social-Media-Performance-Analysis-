@@ -1,3 +1,9 @@
 python-dotenv
 streamlit
 requests
+cassandra-driver
+astrapy
+python-dotenv
+streamlit
+requests
+matplotlib
