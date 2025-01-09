@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+			html, body, [class*="css"]  {
+			font-family: 'Roboto', sans-serif;
+			}
+div[data-testid="stChatInput"]{
+    color: rgba(255, 255, 255, 1);
+    box-shadow: 0 15px 15px rgba(145, 92, 182, .4);}

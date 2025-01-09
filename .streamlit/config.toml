@@ -1,0 +1,5 @@
+[theme]
+primaryColor = "#e5daf0"  # Change this to your preferred color
+backgroundColor = "#e5daf0"  # Optional: Set a custom background color
+textColor = "#0f031A"  # Optional: Set text color
+font = "monospace"  # Optional: Choose font ('serif', 'sans serif', or 'monospace')
